@@ -1,0 +1,108 @@
+<apex:page controller="ProductTablePageController">
+    <apex:form id="Form">
+       
+         <apex:pageBlock title="Product Table: IKEA Warehouse" >
+            <apex:outputText >Please enter a name or a date (m/d/yyyy) to search for products: </apex:outputText>
+            <apex:inputText value="{!searchKey}" label="Input"/>
+        	<apex:commandButton value="Search" action="{! search}" reRender="navigation, productTable, pageNumber"/>
+             <apex:commandButton value="Clear" action="{! clear}" reRender="Form"/> <br/> <br/>
+             
+            <apex:pageBlockButtons location="bottom" html-align="right">
+            <apex:outputPanel id="navigation">
+        			<apex:commandButton action="{!first}" value="First" disabled="{!disablePrevious}" reRender="navigation, productTable, pageNumber"/>
+        			<apex:commandButton action="{!previous}" value="Previous" disabled="{!disablePrevious}" reRender="navigation, productTable, pageNumber"/>        
+        			<apex:commandButton action="{!next}" value="Next" disabled="{!disableNext}" reRender="navigation, productTable, pageNumber"/>
+        			<apex:commandButton action="{!last}" value="Last" disabled="{!disableNext}" reRender="navigation, productTable, pageNumber"/>  
+            </apex:outputPanel>
+            </apex:pageBlockButtons> 
+            <apex:outputPanel id="pageNumber">	
+            	<apex:outputText style="text-align:right">Page {!pageNumber} of {!totalPages}</apex:outputText> 
+            </apex:outputPanel>
+             
+        	<apex:pageBlockTable value="{! products }" var="prod" id="productTable">
+                <apex:column rendered="{!isDel}">
+                    <apex:facet name="header">Action</apex:facet>
+                    <apex:commandLink action="{! deleteProductTable}" reRender="Form">
+                    <apex:param name="rowid" assignTo="{! prodid}" value="{! prod.id}" /> Delete </apex:commandLink> 
+                </apex:column>
+             	<apex:column >
+         			<apex:facet name="header">
+           				<apex:commandLink action="{!sort}" value="Name{!IF(order=='Name',IF(sortDirection='ASC','▼','▲'),'')}" reRender="productTable">
+             				<apex:param value="Name" name="column" assignTo="{!order}" ></apex:param>
+           				</apex:commandLink>
+         			</apex:facet>
+                    <apex:outputField value="{! prod.Name }">
+                        <apex:inlineEditSupport event="ondblclick" showOnEdit="updateButton" /> 
+                    </apex:outputField>
+                </apex:column>
+    			<apex:column >
+                	<apex:outputField value="{! prod.Amount__c }">
+                        <apex:inlineEditSupport event="ondblclick" showOnEdit="updateButton" /> 
+                    </apex:outputField>
+       				<apex:facet name="header">Amount</apex:facet>
+                </apex:column> 
+    			<apex:column >
+         			<apex:facet name="header">
+           				<apex:commandLink action="{!sort}" value="Price{!IF(order=='Price__c',IF(sortDirection='ASC','▼','▲'),'')}" reRender="productTable">
+             				<apex:param value="Price__c" name="column" assignTo="{!order}" ></apex:param>
+           				</apex:commandLink>
+         			</apex:facet>
+                    <apex:outputField value="{! prod.Price__c }">
+                        <apex:inlineEditSupport event="ondblclick" showOnEdit="updateButton" /> 
+                    </apex:outputField>
+                </apex:column> 
+    			<apex:column >
+                	<apex:outputField value="{! prod.ProductType__c }">
+                        <apex:inlineEditSupport event="ondblclick" showOnEdit="updateButton" /> 
+                    </apex:outputField>
+         			<apex:facet name="header">Product Type</apex:facet>
+                </apex:column> 
+            	<apex:column >
+         			<apex:facet name="header">
+           				<apex:commandLink action="{!sort}" value="Release Date{!IF(order=='ReleaseDate__c',IF(sortDirection='ASC','▼','▲'),'')}" reRender="productTable">
+             				<apex:param value="ReleaseDate__c" name="column" assignTo="{!order}" ></apex:param>
+           				</apex:commandLink>
+         			</apex:facet>
+                    <apex:outputField value="{! prod.ReleaseDate__c }">
+                        <apex:inlineEditSupport event="ondblclick" showOnEdit="updateButton" /> 
+                    </apex:outputField>
+                </apex:column> 
+                <apex:column >
+         			<apex:facet name="header">
+           				<apex:commandLink action="{!sort}" value="Added Date{!IF(order=='AddedDate__c',IF(sortDirection='ASC','▼','▲'),'')}" reRender="productTable">
+             				<apex:param value="AddedDate__c" name="column" assignTo="{!order}" ></apex:param>
+           				</apex:commandLink>
+         			</apex:facet>
+                    <apex:outputField value="{! prod.AddedDate__c }">
+                        <apex:inlineEditSupport event="ondblclick" showOnEdit="updateButton" /> 
+                    </apex:outputField>
+                </apex:column> 
+                <apex:column >
+                	<apex:outputField value="{! prod.Available__c }">
+                        <apex:inlineEditSupport event="ondblclick" showOnEdit="updateButton" /> 
+                    </apex:outputField>
+         			<apex:facet name="header">Available</apex:facet>
+                </apex:column>    
+			</apex:pageBlockTable>
+            
+            <apex:commandButton value="Update" action="{!updateNewProductTable}" id="updateButton" reRender="Form" style="display:none"/>
+            <apex:commandButton value="New" action="{!view}" />
+            <apex:commandButton value="Delete" action="{!del}"/>
+            <apex:commandButton value="Cancel" action="{!cancelDel}" rendered="{!isDel}" reRender="Form"/>
+        </apex:pageBlock>
+        <apex:pageMessages />
+        
+        <apex:pageBlock title="Add A New Product" rendered="{!isDisplaying}" id="NewProduct">
+            <apex:pageBlockSection columns="1">
+				<apex:inputField value="{! product.Name}" required="true" label="Name"/> 
+				<apex:inputField value="{! product.Amount__c }" label="Amount"/>
+				<apex:inputField value="{! product.Price__c }" label="Price"/>
+				<apex:inputField value="{! product.ProductType__c }" label="Product Type"/>
+				<apex:inputField value="{! product.ReleaseDate__c }" label="Release Date"/>
+				<apex:inputField value="{! product.Available__c }" label="Available"/>
+			</apex:pageBlockSection>  
+            <apex:commandButton value="Save" action="{!insertNewProductTable}" reRender="Form" />
+		</apex:pageBlock>
+        
+	</apex:form>
+</apex:page>
