@@ -64,7 +64,7 @@ public class ProductTablePageController {
                 searchQuery = searchQuery + ' WHERE Name LIKE \'%'+ searchKey +'%\'';    
             }
         }
-        System.debug(searchQuery + searchOrder + searchLimit);
+        System.debug(searchQuery + searchOrder + searchLimit + 'test');
         products = Database.query(searchQuery + searchOrder + searchLimit); 
         List<ProductTable__c> productsNoLimit = Database.query(searchQuery + searchOrder); 
         productTableSize = productsNoLimit.size();
